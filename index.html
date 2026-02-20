@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Loan Assessment System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        color: #0f172a;
+      }
+
+      .app-container {
+        background: #f9fafb;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.4);
+        width: 100%;
+        max-width: 1100px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        overflow: hidden;
+      }
+
+      @media (max-width: 900px) {
+        .app-container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .left-pane {
+        padding: 24px 28px 24px 28px;
+        border-right: 1px solid #e5e7eb;
+        background: #ffffff;
+      }
+
+      .right-pane {
+        padding: 24px 24px 24px 20px;
+        background: #020617;
+        color: #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .header {
+        margin-bottom: 16px;
+      }
+
+      .title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: 0.03em;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-top: 4px;
+      }
+
+      .section-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #6b7280;
+        margin: 16px 0 8px;
+      }
+
+      .grid-two {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 16px;
+      }
+
+      .grid-three {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px 16px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      label span.optional {
+        font-weight: 400;
+        font-size: 0.75rem;
+        color: #9ca3af;
+      }
+
+      input[type="number"],
+      input[type="text"],
+      select {
+        padding: 7px 9px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        font-size: 0.86rem;
+        outline: none;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+        background: #f9fafb;
+      }
+
+      input[type="number"]:focus,
+      input[type="text"]:focus,
+      select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+        background: #ffffff;
+      }
+
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      .inline-hint {
+        font-size: 0.72rem;
+        color: #9ca3af;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      button {
+        border-radius: 9999px;
+        border: none;
+        padding: 8px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition:
+          transform 0.05s ease,
+          box-shadow 0.1s ease,
+          background 0.15s ease;
+        white-space: nowrap;
+      }
+
+      button.primary {
+        background: linear-gradient(135deg, #2563eb, #4f46e5);
+        color: #f9fafb;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.5);
+      }
+
+      button.secondary {
+        background: #e5e7eb;
+        color: #111827;
+      }
+
+      button:active {
+        transform: translateY(1px);
+        box-shadow: none;
+      }
+
+      button .icon {
+        font-size: 1rem;
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      .checkbox-row label {
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+
+      .tag {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border-radius: 9999px;
+        padding: 3px 8px;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        color: #e5e7eb;
+        background: rgba(15, 23, 42, 0.7);
+      }
+
+      .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+      }
+
+      .result-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #9ca3af;
+      }
+
+      .result-meta {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+
+      .result-box {
+        margin-top: 10px;
+        flex: 1;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(56, 189, 248, 0.18),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at bottom,
+            rgba(129, 140, 248, 0.24),
+            transparent 55%
+          );
+        border-radius: 12px;
+        padding: 12px 14px;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        overflow-y: auto;
+        max-height: 360px;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        scrollbar-color: #4b5563 transparent;
+        scrollbar-width: thin;
+      }
+
+      .result-box::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .result-box::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .result-box::-webkit-scrollbar-thumb {
+        background-color: #4b5563;
+        border-radius: 9999px;
+      }
+
+      .ratio-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .ratio-card {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: 10px;
+        padding: 8px 10px;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+      }
+
+      .ratio-label {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-bottom: 2px;
+      }
+
+      .ratio-value {
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: #fefce8;
+      }
+
+      .ratio-flag {
+        font-size: 0.7rem;
+        margin-top: 2px;
+        color: #fbbf24;
+      }
+
+      .decision-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 9999px;
+        padding: 4px 10px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-top: 10px;
+      }
+
+      .decision-pill.approved {
+        background: rgba(22, 163, 74, 0.2);
+        color: #bbf7d0;
+        border: 1px solid rgba(34, 197, 94, 0.8);
+      }
+
+      .decision-pill.conditional {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fed7aa;
+        border: 1px solid rgba(245, 158, 11, 0.8);
+      }
+
+      .decision-pill.rejected {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fecaca;
+        border: 1px solid rgba(239, 68, 68, 0.8);
+      }
+
+      .decision-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+        background: currentColor;
+      }
+
+      .decision-text {
+        margin-top: 6px;
+      }
+
+      .error-message {
+        margin-top: 8px;
+        font-size: 0.78rem;
+        color: #b91c1c;
+      }
+
+      .footer-note {
+        font-size: 0.7rem;
+        color: #6b7280;
+        margin-top: 8px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 9999px;
+        padding: 2px 8px;
+        font-size: 0.68rem;
+        background: #e5e7eb;
+        color: #374151;
+      }
+
+      .pill-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: #4b5563;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="left-pane">
+        <div class="header">
+          <div class="title">Smart Loan Assessment</div>
+        </div>
+
+        <div class="section-title">Client Profile</div>
+        <div class="grid-two">
+          <div class="field">
+            <label for="clientName">Client Name</label>
+            <input
+              id="clientName"
+              type="text"
+              autocomplete="off"
+              pattern="[A-Za-z\s'-]*"
+            />
+          </div>
+          <div class="field">
+            <label for="clientId"
+              >Client ID <span class="optional">(optional)</span></label
+            >
+            <input
+              id="clientId"
+              type="text"
+              placeholder="Internal reference"
+              autocomplete="off"
+            />
+          </div>
+          <div class="field">
+            <label for="employmentStatus">Employment Status</label>
+            <select id="employmentStatus">
+              <option value="Employed">Employed</option>
+              <option value="Unemployed">Unemployed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="employmentType"
+              >Employment Type
+              <span class="optional">(for risk tuning)</span></label
+            >
+            <select id="employmentType">
+              <option value="permanent">Permanent</option>
+              <option value="contract">Contract</option>
+              <option value="self">Self‑employed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="age">Age (years)</label>
+            <input id="age" type="number" min="0" step="1" />
+          </div>
+          <div class="field">
+            <label for="creditScore">Credit Score</label>
+            <input id="creditScore" type="number" min="0" step="1" />
+          </div>
+        </div>
+
+        <div class="section-title">Financial Snapshot</div>
+        <div class="grid-three">
+          <div class="field">
+            <label for="monthlyIncome">Monthly Income (net)</label>
+            <input id="monthlyIncome" type="number" min="0" step="100" />
+            <div class="inline-hint">Local currency</div>
+          </div>
+          <div class="field">
+            <label for="monthlyExpenses">Monthly Living Expenses</label>
+            <input id="monthlyExpenses" type="number" min="0" step="50" />
+          </div>
+          <div class="field">
+            <label for="existingDebt">Existing Monthly Debt</label>
+            <input id="existingDebt" type="number" min="0" step="50" />
+          </div>
+        </div>
+
+        <div class="section-title">Loan Request</div>
+        <div class="grid-three">
+          <div class="field">
+            <label for="loanAmount">Requested Loan Amount</label>
+            <input id="loanAmount" type="number" min="0" step="500" />
+          </div>
+          <div class="field">
+            <label for="loanPeriod">Repayment Period (months)</label>
+            <input id="loanPeriod" type="number" min="0" step="6" />
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input id="hasInsurance" type="checkbox" />
+          <label for="hasInsurance"
+            >Client will take loan protection insurance</label
+          >
+        </div>
+
+        <div class="buttons">
+          <button id="evaluateBtn" class="primary" type="button">
+            <span class="icon">⚙️</span>
+            <span>Run Assessment</span>
+          </button>
+          <button id="clearBtn" class="secondary" type="button">
+            <span class="icon">🔁</span>
+            <span>Clear / Next Client</span>
+          </button>
+        </div>
+
+        <div id="errorBox" class="error-message" aria-live="polite"></div>
+
+        <div class="footer-note">
+          This tool is for preliminary screening only and does not replace a
+          full credit policy or manual underwriting.
+        </div>
+      </div>
+
+      <div class="right-pane">
+        <div class="result-header">
+          <div class="result-title">Assessment Result</div>
+          <div class="result-meta" id="resultMeta">Waiting for input...</div>
+        </div>
+
+        <div class="tag-row">
+          <div class="tag">DTI Target: ≤ 36%</div>
+          <div class="tag">Hard Cap DTI: 50%</div>
+          <div class="tag">LTI Comfort: ≤ 300%</div>
+        </div>
+
+        <div class="ratio-grid" id="ratioGrid" aria-hidden="true">
+          <div class="ratio-card">
+            <div class="ratio-label">Debt-to-Income (DTI)</div>
+            <div class="ratio-value" id="dtiValue">–</div>
+            <div class="ratio-flag" id="dtiFlag"></div>
+          </div>
+          <div class="ratio-card">
+            <div class="ratio-label">Existing Debt Ratio</div>
+            <div class="ratio-value" id="existingDebtRatioValue">–</div>
+            <div class="ratio-flag" id="existingDebtRatioFlag"></div>
+          </div>
+          <div class="ratio-card">
+            <div class="ratio-label">Loan-to-Income (LTI)</div>
+            <div class="ratio-value" id="ltiValue">–</div>
+            <div class="ratio-flag" id="ltiFlag"></div>
+          </div>
+          <div class="ratio-card">
+            <div class="ratio-label">Monthly Payment (EMI)</div>
+            <div class="ratio-value" id="emiValue">–</div>
+            <div class="ratio-flag" id="emiFlag"></div>
+          </div>
+        </div>
+
+        <div class="result-box" id="resultBox">
+          Provide the client details on the left and click
+          <strong>Run Assessment</strong> to see a decision summary here.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function formatPercent(value) {
+        if (!isFinite(value)) return "–";
+        return value.toFixed(2) + " %";
+      }
+
+      function formatCurrency(value) {
+        if (!isFinite(value)) return "–";
+        const abs = Math.abs(value);
+        const suffix = abs >= 1_000_000 ? "M" : abs >= 1_000 ? "k" : "";
+        let short = value;
+        if (suffix === "M") short = value / 1_000_000;
+        if (suffix === "k") short = value / 1_000;
+        return short.toFixed(2) + (suffix ? " " + suffix : "");
+      }
+
+      function computeMonthlyPayment(principal, months, annualRate) {
+        if (months <= 0) return NaN;
+        const r = (annualRate || 0) / 12 / 100;
+        if (r <= 0) {
+          return principal / months;
+        }
+        const pow = Math.pow(1 + r, -months);
+        return principal * (r / (1 - pow));
+      }
+
+      function clearForm() {
+        document.getElementById("clientName").value = "";
+        document.getElementById("clientId").value = "";
+        document.getElementById("employmentStatus").value = "Employed";
+        document.getElementById("employmentType").value = "permanent";
+        document.getElementById("age").value = "";
+        document.getElementById("creditScore").value = "";
+        document.getElementById("monthlyIncome").value = "";
+        document.getElementById("monthlyExpenses").value = "";
+        document.getElementById("existingDebt").value = "";
+        document.getElementById("loanAmount").value = "";
+        document.getElementById("loanPeriod").value = "";
+        document.getElementById("hasInsurance").checked = false;
+
+        document.getElementById("errorBox").textContent = "";
+
+        document.getElementById("dtiValue").textContent = "–";
+        document.getElementById("existingDebtRatioValue").textContent = "–";
+        document.getElementById("ltiValue").textContent = "–";
+        document.getElementById("emiValue").textContent = "–";
+        document.getElementById("dtiFlag").textContent = "";
+        document.getElementById("existingDebtRatioFlag").textContent = "";
+        document.getElementById("ltiFlag").textContent = "";
+        document.getElementById("emiFlag").textContent = "";
+
+        document.getElementById("resultMeta").textContent =
+          "Waiting for input...";
+        document.getElementById("resultBox").innerHTML =
+          "Provide the client details on the left and click <strong>Run Assessment</strong> to see a decision summary here.";
+      }
+
+      function runAssessment() {
+        const employmentStatus =
+          document.getElementById("employmentStatus").value;
+        const employmentType = document.getElementById("employmentType").value;
+        const age = parseInt(document.getElementById("age").value || "0", 10);
+        const creditScore = parseInt(
+          document.getElementById("creditScore").value || "0",
+          10,
+        );
+        const monthlyIncome = parseFloat(
+          document.getElementById("monthlyIncome").value || "0",
+        );
+        const monthlyExpenses = parseFloat(
+          document.getElementById("monthlyExpenses").value || "0",
+        );
+        const existingDebt = parseFloat(
+          document.getElementById("existingDebt").value || "0",
+        );
+        const loanAmount = parseFloat(
+          document.getElementById("loanAmount").value || "0",
+        );
+        const loanPeriod = parseInt(
+          document.getElementById("loanPeriod").value || "0",
+          10,
+        );
+        const interestRate = 0; // No explicit interest input in UI
+        const hasInsurance = document.getElementById("hasInsurance").checked;
+        const clientName = (
+          document.getElementById("clientName").value || ""
+        ).trim();
+        const clientId = (
+          document.getElementById("clientId").value || ""
+        ).trim();
+
+        const errorBox = document.getElementById("errorBox");
+        errorBox.textContent = "";
+
+        if (!Number.isFinite(age) || age <= 0) {
+          errorBox.textContent = "Error: Age must be a positive number.";
+          return;
+        }
+        if (!Number.isFinite(creditScore) || creditScore <= 0) {
+          errorBox.textContent =
+            "Error: Credit score must be a positive number.";
+          return;
+        }
+        if (monthlyIncome <= 0) {
+          errorBox.textContent =
+            "Error: Monthly Income must be greater than zero.";
+          return;
+        }
+        if (loanAmount <= 0) {
+          errorBox.textContent =
+            "Error: Requested Loan Amount must be greater than zero.";
+          return;
+        }
+        if (loanPeriod <= 0) {
+          errorBox.textContent =
+            "Error: Repayment Period must be greater than zero months.";
+          return;
+        }
+
+        const resultMeta = document.getElementById("resultMeta");
+        const now = new Date();
+        const ts = now.toLocaleString();
+        resultMeta.textContent = "Last evaluated: " + ts;
+
+        if (employmentStatus === "Unemployed") {
+          updateSummaryBoxes(NaN, NaN, NaN, NaN);
+          showDecision(
+            "Rejected",
+            "Decision: Rejected",
+            "Reason: No stable income (Unemployed).",
+          );
+          return;
+        }
+
+        if (age < 18) {
+          updateSummaryBoxes(NaN, NaN, NaN, NaN);
+          showDecision(
+            "Rejected",
+            "Decision: Rejected",
+            "Reason: Age below legal lending age.",
+          );
+          return;
+        }
+
+        if (age > 65) {
+          updateSummaryBoxes(NaN, NaN, NaN, NaN);
+          showDecision(
+            "Rejected",
+            "Decision: Rejected",
+            "Reason: Age above standard lending limit.",
+          );
+          return;
+        }
+
+        if (creditScore < 600) {
+          updateSummaryBoxes(NaN, NaN, NaN, NaN);
+          showDecision(
+            "Rejected",
+            "Decision: Rejected",
+            "Reason: Poor credit score (below 600).",
+          );
+          return;
+        }
+
+        if (creditScore >= 600 && creditScore < 700) {
+          const monthlyPayment = computeMonthlyPayment(
+            loanAmount,
+            loanPeriod,
+            interestRate,
+          );
+          const totalOutgo = monthlyExpenses + existingDebt + monthlyPayment;
+          const dti = (totalOutgo / monthlyIncome) * 100;
+          const existingDebtRatio = (existingDebt / monthlyIncome) * 100;
+          const annualIncome = monthlyIncome * 12;
+          const lti = (loanAmount / annualIncome) * 100;
+
+          updateSummaryBoxes(dti, existingDebtRatio, lti, monthlyPayment);
+
+          let text = "Decision: Further Review Required\n";
+          text += "Reason: Medium credit risk (600-699).\n\n";
+          text += "Key metrics:\n";
+          text += "  • Debt-to-Income (DTI): " + formatPercent(dti) + "\n";
+          text +=
+            "  • Existing Debt Ratio: " +
+            formatPercent(existingDebtRatio) +
+            "\n";
+          text += "  • Loan-to-Income (LTI): " + formatPercent(lti) + "\n";
+          text +=
+            "  • Monthly Payment: " + formatCurrency(monthlyPayment) + "\n";
+          text +=
+            "\nRecommendation: Manual underwriter review is recommended with potential collateral or reduced amount.";
+
+          showDecision(
+            "Conditional",
+            "Decision: Further Review Required",
+            text,
+          );
+          return;
+        }
+
+        const monthlyPayment = computeMonthlyPayment(
+          loanAmount,
+          loanPeriod,
+          interestRate,
+        );
+        const totalOutgo = monthlyExpenses + existingDebt + monthlyPayment;
+        const dti = (totalOutgo / monthlyIncome) * 100;
+        const existingDebtRatio = (existingDebt / monthlyIncome) * 100;
+        const annualIncome = monthlyIncome * 12;
+        const lti = (loanAmount / annualIncome) * 100;
+
+        let baseDecision = "";
+
+        if (dti > 50) {
+          baseDecision = "Rejected - DTI > 50% (Unaffordable)";
+        } else if (dti > 36) {
+          baseDecision =
+            "Conditionally Approved - High DTI (monitor or require collateral)";
+        } else if (existingDebtRatio > 20) {
+          baseDecision = "Conditionally Approved - High existing debt burden";
+        } else if (lti > 300) {
+          baseDecision =
+            "Conditionally Approved - High Loan-to-Income ratio (reduce amount or extend period)";
+        } else {
+          baseDecision = "Approved - Full Amount";
+        }
+
+        if (
+          employmentType === "contract" &&
+          baseDecision.startsWith("Approved")
+        ) {
+          baseDecision =
+            "Conditionally Approved - Contract employment, verify stability";
+        }
+        if (employmentType === "self" && !baseDecision.startsWith("Rejected")) {
+          baseDecision =
+            "Conditionally Approved - Self-employed, require income documentation";
+        }
+
+        if (hasInsurance && !baseDecision.startsWith("Rejected")) {
+          if (baseDecision.startsWith("Conditionally Approved")) {
+            baseDecision += " + insurance improves risk profile";
+          }
+        }
+
+        const riskFactors = [];
+        if (existingDebtRatio > 30) {
+          riskFactors.push("Existing debt already exceeds 30% of income.");
+        }
+        if (interestRate > 0 && loanPeriod > 120) {
+          riskFactors.push(
+            "Very long tenor with interest, check affordability at rate changes.",
+          );
+        }
+
+        updateSummaryBoxes(dti, existingDebtRatio, lti, monthlyPayment);
+
+        const headerLines = [];
+        const clientLabel = clientName || "Unnamed client";
+        let idPart = clientId ? " | ID: " + clientId : "";
+        headerLines.push("Client: " + clientLabel + idPart);
+        headerLines.push(
+          "Employment: " + employmentStatus + " (" + employmentType + ")",
+        );
+        headerLines.push(
+          "Age: " + age + " years | Credit score: " + creditScore,
+        );
+
+        const financialLines = [];
+        financialLines.push("Monthly income: " + formatCurrency(monthlyIncome));
+        financialLines.push(
+          "Expenses + existing debt: " +
+            formatCurrency(monthlyExpenses + existingDebt),
+        );
+        financialLines.push(
+          "Requested amount: " +
+            formatCurrency(loanAmount) +
+            " over " +
+            loanPeriod +
+            " months",
+        );
+
+        let text = "";
+        text += headerLines.join("\n") + "\n";
+        text += financialLines.join("\n") + "\n\n";
+        text += "Computed metrics:\n";
+        text += "  • Debt-to-Income (DTI): " + formatPercent(dti) + "\n";
+        text +=
+          "  • Existing Debt Ratio: " + formatPercent(existingDebtRatio) + "\n";
+        text += "  • Loan-to-Income (LTI): " + formatPercent(lti) + "\n";
+        text +=
+          "  • Monthly Payment (EMI): " + formatCurrency(monthlyPayment) + "\n";
+        if (interestRate > 0) {
+          const totalPaid = monthlyPayment * loanPeriod;
+          const totalInterest = totalPaid - loanAmount;
+          text +=
+            "  • Total Interest (approx.): " +
+            formatCurrency(totalInterest) +
+            "\n";
+        }
+        text += "\nDecision: " + baseDecision + "\n";
+
+        if (riskFactors.length > 0) {
+          text += "\nAdditional risk flags:\n  • " + riskFactors.join("\n  • ");
+        }
+
+        showDecision(baseDecision, "Decision: " + baseDecision, text);
+      }
+
+      function updateSummaryBoxes(dti, existingDebtRatio, lti, monthlyPayment) {
+        document.getElementById("dtiValue").textContent = formatPercent(dti);
+        document.getElementById("existingDebtRatioValue").textContent =
+          formatPercent(existingDebtRatio);
+        document.getElementById("ltiValue").textContent = formatPercent(lti);
+        document.getElementById("emiValue").textContent =
+          formatCurrency(monthlyPayment);
+
+        const dtiFlag =
+          dti > 50
+            ? "Above hard cap"
+            : dti > 36
+              ? "Above comfort zone"
+              : isFinite(dti)
+                ? "Within comfort zone"
+                : "";
+        const edrFlag =
+          existingDebtRatio > 30
+            ? "Elevated existing debt"
+            : isFinite(existingDebtRatio)
+              ? "Acceptable"
+              : "";
+        const ltiFlag =
+          lti > 300
+            ? "High loan vs income"
+            : isFinite(lti)
+              ? "Within comfort range"
+              : "";
+        const emiFlag = isFinite(monthlyPayment)
+          ? "Estimated monthly installment"
+          : "";
+
+        document.getElementById("dtiFlag").textContent = dtiFlag;
+        document.getElementById("existingDebtRatioFlag").textContent = edrFlag;
+        document.getElementById("ltiFlag").textContent = ltiFlag;
+        document.getElementById("emiFlag").textContent = emiFlag;
+
+        document
+          .getElementById("ratioGrid")
+          .setAttribute("aria-hidden", "false");
+      }
+
+      function showDecision(decisionLabel, shortTitle, detailedText) {
+        const resultBox = document.getElementById("resultBox");
+
+        let classification = "conditional";
+        const lower = decisionLabel.toLowerCase();
+        if (lower.startsWith("approved")) classification = "approved";
+        if (lower.startsWith("rejected")) classification = "rejected";
+
+        let pillClass = "decision-pill " + classification;
+        let pillText =
+          classification === "approved"
+            ? "Approved"
+            : classification === "rejected"
+              ? "Rejected"
+              : "Conditional";
+
+        const pillHtml =
+          '<div class="decision-pill ' +
+          classification +
+          '">' +
+          '<span class="decision-dot"></span>' +
+          "<span>" +
+          pillText +
+          "</span>" +
+          "</div>";
+
+        const headerHtml =
+          "<div>" +
+          pillHtml +
+          '<div class="decision-text">' +
+          shortTitle +
+          "</div></div>";
+
+        const detailsHtml =
+          '<pre style="margin-top:8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace; font-size:0.78rem; white-space:pre-wrap;">' +
+          detailedText.replace(/</g, "&lt;") +
+          "</pre>";
+
+        const annotationHtml =
+          '<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:6px;">' +
+          '<span class="pill"><span class="pill-dot"></span><span>Automated rule‑based assessment</span></span>' +
+          '<span class="pill"><span class="pill-dot"></span><span>Not a final credit decision</span></span>' +
+          "</div>";
+
+        resultBox.innerHTML = headerHtml + detailsHtml + annotationHtml;
+      }
+
+      document
+        .getElementById("evaluateBtn")
+        .addEventListener("click", runAssessment);
+      document.getElementById("clearBtn").addEventListener("click", clearForm);
+
+      document
+        .getElementById("monthlyIncome")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            runAssessment();
+          }
+        });
+
+      // Enforce allowed characters for name (letters, spaces, ', - only)
+      (function () {
+        const nameInput = document.getElementById("clientName");
+        if (!nameInput) return;
+        nameInput.addEventListener("input", function (e) {
+          e.target.value = e.target.value.replace(/[^A-Za-z\s'-]/g, "");
+        });
+      })();
+
+      // Strict numeric enforcement: prevent letters in numeric fields
+      (function () {
+        function filterIntegerInput(id) {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", function (e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, "");
+          });
+        }
+
+        function filterDecimalInput(id) {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", function (e) {
+            let v = e.target.value.replace(/[^0-9.]/g, "");
+            const parts = v.split(".");
+            if (parts.length > 2) {
+              v = parts[0] + "." + parts.slice(1).join("");
+            }
+            e.target.value = v;
+          });
+        }
+
+        filterDecimalInput("monthlyIncome");
+        filterDecimalInput("monthlyExpenses");
+        filterDecimalInput("existingDebt");
+        filterDecimalInput("loanAmount");
+        filterIntegerInput("loanPeriod");
+        filterIntegerInput("age");
+        filterIntegerInput("creditScore");
+      })();
+    </script>
+  </body>
+</html>
